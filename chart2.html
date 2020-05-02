@@ -1,0 +1,79 @@
+ <html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date', 'Cases', 'Deaths'],
+            ['March 13', 421, 0],
+            ['March 14', 610, 2],
+            ['March 15', 732, 6],
+            ['March 16', 950, 10],
+            ['March 17', 1374, 17],
+            ['March 18', 2382, 27],
+            ['March 19', 4152, 30],
+            ['March 20', 7102, 57],
+            ['March 21', 10356, 80],
+            ['March 22', 15168, 122],
+            ['March 23', 20875, 159],
+            ['March 24', 25665, 218],
+            ['March 25', 33066, 325],
+            ['March 26', 38987, 432],
+            ['March 27', 44635, 535],
+            ['March 28', 53363, 782],
+            ['March 29', 59568, 965],
+            ['March 30', 67174, 1224],
+            ['March 31', 75832, 1550],
+            ['April 01', 83889, 1941],
+            ['April 02', 92770, 2653],
+            ['April 03', 102870, 2935],
+            ['April 04', 114996, 3568],
+            ['April05', 122911, 4161],
+            ['April 06', 130689, 4758],
+            ['April 07', 140081, 5563],
+            ['April 08', 149401, 6268],
+            ['April 09', 159937, 7067],
+            ['April 10', 170512, 7844],
+            ['April 11', 180458, 8627],
+            ['April 12', 188694, 9385],
+            ['April 13', 195031, 10056],
+            ['April 14', 202208, 10834],
+            ['April 15', 213779, 11586],
+            ['April 16', 222284, 12192],
+            ['April 17', 229642, 12822],
+            ['April 18', 236763, 13362],
+            ['April 19', 242817, 13869],
+            ['April 20', 247543, 14347],
+            ['April 21', 251720, 14828],
+            ['April 22', 257246, 15302],
+            ['April 23', 263460, 15740],
+            ['April 24', 271621, 16162],
+            ['April 25', 282174, 16599],
+            ['April 26', 288076, 16966],
+            ['April 27', 292027, 17303],
+            ['April 28', 295137, 17638],
+            ['April 29', 299722, 18015],
+            ['April 30', 304401, 18321],
+ 
+]);
+          
+          
+        var options = {
+          title: 'Corona cases in New York State',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+  </body>
+</html>

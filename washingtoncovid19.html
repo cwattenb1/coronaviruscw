@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Washington State COVID-19 Cases </title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+<script src="/js/leaflet-0.7.2/leaflet.ajax.min.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 400px;
+		}
+	</style>
+
+	<style>#map { width: 800px; height: 500px; }
+.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript" src="washington_use.js"></script>
+
+<script type="text/javascript">
+
+var map = L.map('map').setView([47.94360289398778, -120.4], 6);
+
+	
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox/light-v9',
+		tileSize: 512,
+		zoomOffset: -1
+	}).addTo(map);
+
+  
+	var info = L.control();
+
+        info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info');
+		this.update();
+		return this._div;
+	};
+
+        info.update = function (props) {
+		this._div.innerHTML = '<h4>WA COVID-19 Cases</h4>' +  (props ?
+			'<b>' + props.JURISDIC_3 + '</b><br />' + props.waonly_Con + ' confirmed cases'
+			: 'Hover over a county');
+	};
+
+	info.addTo(map);
+	function getColor(d) {
+		return d > 1000 ? '#7b2479' :
+				d > 500  ? '#9c309a' :
+				d > 100  ? '#bc38ba' :
+				d > 50  ? '#d468d3' :
+				d > 20   ? '#e58ae4' :
+				d > 10   ? '#efb3ee' :
+				d > 5   ? '#fae5fa' :
+							'#fcf2fc';
+	}
+
+        function style(feature) {
+		return {
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7,
+			fillColor: getColor(feature.properties.waonly_Con)
+		};
+	}
+//making state outline grey when hovered over
+	function highlightFeature(e) {
+		var layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
+//properties for browser detection
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
+		}
+//update fires when users moves map  
+		info.update(layer.feature.properties);
+	}
+ // defining geojson 
+	var geojson;
+    //resetting outline when not hovered over
+	function resetHighlight(e) {
+		geojson.resetStyle(e.target);
+		info.update();
+	}
+//zooms into target's bounds
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToFeature
+		});
+	}
+    
+	geojson = L.geoJson(washington, {
+		style: style,
+		onEachFeature: onEachFeature
+	}).addTo(map);
+
+    
+    map.attributionControl.addAttribution('Covid-19 Data &copy; <a href="https://github.com/nytimes/covid-19-data</a>');
+
+	var legend = L.control({position: 'bottomright'});
+	legend.onAdd = function (map) {
+		var div = L.DomUtil.create('div', 'info legend'),
+			grades = [0, 5, 10, 20, 50, 100, 500, 1000],
+			labels = [],
+			from, to;
+		for (var i = 0; i < grades.length; i++) {
+			from = grades[i];
+			to = grades[i + 1];
+			labels.push(
+				'<i style="background:' + getColor(from + 1) + '"></i> ' +
+				from + (to ? '&ndash;' + to : '+'));
+		}
+
+		div.innerHTML = labels.join('<br>');
+		return div;
+	};
+        
+	legend.addTo(map);
+
+</script>
+
+
+
+</body>
+</html>
